@@ -14,6 +14,26 @@
 #define HAVE_SYS_IOCTL_H 1
 #define HAVE_SYS_TIME_H 1
 #define HAVE_SYSLOG_H 1
+#if defined(_WIN32)
+#undef HAVE_SYSLOG_H
+#define HAVE_SYSLOG_H 0
+#undef HAVE_PWD_H
+#define HAVE_PWD_H 0
+#undef HAVE_GRP_H
+#define HAVE_GRP_H 0
+#undef HAVE_UNISTD_H
+#define HAVE_UNISTD_H 0
+#undef HAVE_SYS_UTSNAME_H
+#define HAVE_SYS_UTSNAME_H 0
+#undef HAVE_SYS_WAIT_H
+#define HAVE_SYS_WAIT_H 0
+#undef HAVE_SYS_SELECT_H
+#define HAVE_SYS_SELECT_H 0
+#undef HAVE_TERMIOS_H
+#define HAVE_TERMIOS_H 0
+#undef HAVE_NETDB_H
+#define HAVE_NETDB_H 0
+#endif
 #define HAVE_SYS_SELECT_H 1
 #define HAVE_SYS_FILE_H 1
 #define HAVE_SYS_UTSNAME_H 1
@@ -51,7 +71,8 @@
 #define HAVE_GETHOSTBYNAME 1
 #define HAVE_GETADDRINFO 1
 #define HAVE_GETPROTOBYNUMBER 1
-#define HAVE_GETPROTOBYNUMBER_R 1
+/* musl does not provide getprotobynumber_r */
+#define HAVE_GETPROTOBYNUMBER_R 0
 #define HAVE_HSTRERROR 1
 #define HAVE_PROTOTYPE_HSTRERROR 1
 #define HAVE_CLOCK_GETTIME 1

@@ -39,7 +39,10 @@ pub fn build(b: *std.Build) void {
         },
         .windows => {
             // Windows builds are experimental; keep flags minimal.
-            c_flags.append(b.allocator, "-DWIN32") catch @panic("OOM adding windows flags");
+            c_flags.appendSlice(b.allocator, &.{
+                "-DWIN32",
+                "-DHAVE_SYSLOG_H=0",
+            }) catch @panic("OOM adding windows flags");
             exe.linkSystemLibrary("ws2_32");
         },
         else => {},
