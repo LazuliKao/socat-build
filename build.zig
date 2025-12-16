@@ -159,8 +159,10 @@ const config_linux_glibc =
     "#define BUILD_DATE \"custom\"\n\n" ++
     "#define HAVE_STRUCT_TIMESPEC 1\n" ++
     "#define HAVE_STRUCT_LINGER 1\n" ++
+    "#define HAVE_STRUCT_GROUP_SOURCE_REQ 1\n" ++
     "#define HAVE_STRUCT_IP_MREQ 1\n" ++
-    "#define HAVE_STRUCT_IP_MREQN 0\n\n" ++
+    "#define HAVE_STRUCT_IP_MREQN 1\n" ++
+    "#define HAVE_STRUCT_IP_MREQ_SOURCE 1\n\n" ++
     "#define HAVE_TYPE_SOCKLEN 1\n" ++
     "#define HAVE_TYPE_UINT8 1\n" ++
     "#define HAVE_TYPE_UINT16 1\n" ++
@@ -496,6 +498,14 @@ const config_windows =
     "#pragma clang diagnostic ignored \"-Wparentheses\"\n" ++
     "#pragma clang diagnostic ignored \"-Wformat\"\n" ++
     "#endif\n" ++
+    // Auto-initialize Winsock using constructor attribute
+    "__attribute__((constructor)) static void socat_wsa_init(void) {\n" ++
+    "    WSADATA wsaData;\n" ++
+    "    WSAStartup(MAKEWORD(2, 2), &wsaData);\n" ++
+    "}\n" ++
+    "__attribute__((destructor)) static void socat_wsa_cleanup(void) {\n" ++
+    "    WSACleanup();\n" ++
+    "}\n" ++
     "#ifndef _SOCKLEN_T_DEFINED\n" ++
     "typedef int socklen_t;\n" ++
     "#define _SOCKLEN_T_DEFINED 1\n" ++
@@ -641,6 +651,7 @@ const config_windows =
     "static inline struct tm *localtime_r(const time_t *t, struct tm *tmout) { return (localtime_s(tmout, t) == 0) ? tmout : NULL; }\n" ++
     "static inline int lstat(const char *path, struct stat *buf) { return stat(path, buf); }\n" ++
     "static inline int link(const char *oldpath, const char *newpath) { (void)oldpath; (void)newpath; errno = ENOSYS; return -1; }\n" ++
+    "static inline ssize_t readlink(const char *pathname, char *buf, size_t bufsiz) { (void)pathname; (void)buf; (void)bufsiz; errno = ENOSYS; return -1; }\n" ++
     "static inline int pipe(int pipefd[2]) { return _pipe(pipefd, 4096, _O_BINARY); }\n" ++
     "static inline int socketpair(int domain, int type, int protocol, int sv[2]) { (void)domain; (void)type; (void)protocol; errno = ENOSYS; return -1; }\n" ++
     "static inline int setuid(uid_t uid) { (void)uid; errno = ENOSYS; return -1; }\n" ++
@@ -707,6 +718,37 @@ const config_windows =
     "#define NGROUPS 0\n" ++
     "#endif\n" ++
     "#endif\n\n" ++
+    // Undefine features that are set to 0, since socat uses #ifdef checks
+    "#undef WITH_FDNUM\n" ++
+    "#undef WITH_GOPEN\n" ++
+    "#undef WITH_PIPE\n" ++
+    "#undef WITH_UNIX\n" ++
+    "#undef WITH_ABSTRACT_UNIXSOCKET\n" ++
+    "#undef WITH_INTERFACE\n" ++
+    "#undef WITH_IP6\n" ++
+    "#undef WITH_RAWIP\n" ++
+    "#undef WITH_SCTP\n" ++
+    "#undef WITH_DCCP\n" ++
+    "#undef WITH_UDPLITE\n" ++
+    "#undef WITH_SOCKS4\n" ++
+    "#undef WITH_SOCKS4A\n" ++
+    "#undef WITH_SOCKS5\n" ++
+    "#undef WITH_PROXY\n" ++
+    "#undef WITH_GENERICSOCKET\n" ++
+    "#undef WITH_SOCKETPAIR\n" ++
+    "#undef WITH_VSOCK\n" ++
+    "#undef WITH_PTY\n" ++
+    "#undef WITH_READLINE\n" ++
+    "#undef WITH_OPENSSL\n" ++
+    "#undef WITH_TCPWRAP\n" ++
+    "#undef WITH_POSIXMQ\n" ++
+    "#undef WITH_NAMESPACES\n" ++
+    "#undef WITH_FS\n" ++
+    "#undef WITH_TUN\n" ++
+    "#undef WITH_EXEC\n" ++
+    "#undef WITH_SYSTEM\n" ++
+    "#undef WITH_SHELL\n" ++
+    "#undef WITH_TERMIOS\n\n" ++
     "#endif /* __config_h_included */\n";
 
 pub fn build(b: *std.Build) void {
@@ -723,7 +765,7 @@ pub fn build(b: *std.Build) void {
     const config_content = switch (target.result.os.tag) {
         .windows => config_windows,
         .linux => switch (target.result.abi) {
-            .musl => config_linux_musl,
+            .musl, .musleabi, .musleabihf => config_linux_musl,
             else => config_linux_glibc,
         },
         else => config_linux_glibc,
