@@ -4,11 +4,12 @@ const config_linux_glibc =
     "/* Minimal handcrafted config for cross-building socat with zig (glibc). */\n" ++
     "#ifndef __config_h_included\n" ++
     "#define __config_h_included 1\n\n" ++
+    "#define RETSIGTYPE void\n" ++
     "#define STDC_HEADERS 1\n" ++
     "#define TIME_WITH_SYS_TIME 1\n" ++
     "#define HAVE_SYS_WAIT_H 1\n" ++
     "#define HAVE_SYS_TYPES_H 1\n" ++
-    "#define HAVE_SYS_SOCKET_H 0\n" ++
+    "#define HAVE_SYS_SOCKET_H 1\n" ++
     "#define HAVE_SYS_UIO_H 1\n" ++
     "#define HAVE_SYS_STAT_H 1\n" ++
     "#define HAVE_SYS_UN_H 1\n" ++
@@ -32,7 +33,10 @@ const config_linux_glibc =
     "#define HAVE_UNISTD_H 1\n" ++
     "#define HAVE_POLL_H 1\n" ++
     "#define HAVE_SYS_POLL_H 1\n" ++
-    "#define HAVE_STDBOOL_H 0\n" ++
+    "#define HAVE_STDBOOL_H 1\n" ++
+    "#define CRDLY_SHIFT 8\n" ++
+    "#define TABDLY_SHIFT 11\n" ++
+    "#define CSIZE_SHIFT 4\n" ++
     "#define HAVE_INTTYPES_H 1\n" ++
     "#define HAVE_STDINT_H 1\n" ++
     "#define HAVE_REGEX_H 1\n" ++
@@ -40,9 +44,15 @@ const config_linux_glibc =
     "#define HAVE_RESOLV_H 1\n" ++
     "#define HAVE_NET_IF_H 1\n" ++
     "#define HAVE_LINUX_IF_PACKET_H 1\n" ++
+    "#define HAVE_LINUX_IF_TUN_H 1\n" ++
+    "#define HAVE_LINUX_VM_SOCKETS_H 1\n" ++
+    "#define HAVE_LINUX_DCCP_H 1\n" ++
     "#define HAVE_NETINET_IF_ETHER_H 1\n" ++
     "#define HAVE_PWD_H 1\n" ++
-    "#define HAVE_GRP_H 1\n\n" ++
+    "#define HAVE_GRP_H 1\n" ++
+    "#define HAVE_PTY_H 1\n" ++
+    "#define HAVE_MQUEUE_H 1\n" ++
+    "#define HAVE_SCHED_H 1\n\n" ++
     "#define HAVE_STRFTIME 1\n" ++
     "#define HAVE_SELECT 1\n" ++
     "#define HAVE_PSELECT 1\n" ++
@@ -60,6 +70,8 @@ const config_linux_glibc =
     "#define HAVE_UNAME 1\n" ++
     "#define HAVE_GETPGID 1\n" ++
     "#define HAVE_GETSID 1\n" ++
+    "#define HAVE_SETNS 1\n" ++
+    "#define HAVE_SETNS 1\n" ++
     "#define HAVE_PUTENV 1\n" ++
     "#define HAVE_SETGROUPS 1\n" ++
     "#define HAVE_GETRESUID 1\n" ++
@@ -72,11 +84,20 @@ const config_linux_glibc =
     "#define HAVE_IF_NAMETOINDEX 1\n" ++
     "#define HAVE_PTSNAME 1\n" ++
     "#define HAVE_OPENPTY 1\n" ++
+    "#define HAVE_PROTOTYPE_LIB_ptsname 1\n" ++
+    "#define HAVE_GRANTPT 1\n" ++
+    "#define HAVE_UNLOCKPT 1\n" ++
+    "#define HAVE_DEV_PTMX 1\n" ++
+    "#define HAVE_PROTOTYPE_LIB_ptsname 1\n" ++
+    "#define HAVE_GRANTPT 1\n" ++
+    "#define HAVE_UNLOCKPT 1\n" ++
+    "#define HAVE_DEV_PTMX 1\n" ++
     "#define HAVE_GETPWNAM 1\n" ++
     "#define HAVE_GETPWUID 1\n" ++
     "#define HAVE_GETGRNAM 1\n" ++
     "#define HAVE_INITGROUPS 1\n" ++
-    "#define HAVE_SIGACTION 1\n\n" ++
+    "#define HAVE_SIGACTION 1\n" ++
+    "#define HAVE_FDS_BITS 1\n\n" ++
     "#define HAVE_PROTOTYPE_LIB_posix_memalign 1\n" ++
     "#define HAVE_PROTOTYPE_LIB_strdup 1\n" ++
     "#define HAVE_PROTOTYPE_LIB_strerror 1\n" ++
@@ -94,37 +115,47 @@ const config_linux_glibc =
     "#define WITH_FILE 1\n" ++
     "#define WITH_GOPEN 1\n" ++
     "#define WITH_CREAT 1\n" ++
+    // "#define WITH_TERMIOS 1\n" ++
     "#define WITH_PIPE 1\n" ++
     "#define WITH_UNIX 1\n" ++
+    "#define WITH_ABSTRACT_UNIXSOCKET 1\n" ++
     "#define WITH_INTERFACE 1\n" ++
     "#define WITH_IP4 1\n" ++
     "#define WITH_IP6 1\n" ++
     "#define WITH_TCP 1\n" ++
     "#define WITH_UDP 1\n" ++
-    "#define WITH_RAWIP 0\n" ++
-    "#define WITH_SCTP 0\n" ++
-    "#define WITH_DCCP 0\n" ++
-    "#define WITH_UDPLITE 0\n" ++
-    "#define WITH_SOCKS4 0\n" ++
-    "#define WITH_SOCKS4A 0\n" ++
-    "#define WITH_SOCKS5 0\n" ++
-    "#define WITH_PROXY 0\n" ++
-    "#define WITH_GENERICSOCKET 0\n" ++
+    "#define WITH_RAWIP 1\n" ++
+    "#define WITH_SCTP 1\n" ++
+    "#define WITH_DCCP 1\n" ++
+    "#define WITH_UDPLITE 1\n" ++
+    "#define WITH_SOCKS4 1\n" ++
+    "#define WITH_SOCKS4A 1\n" ++
+    "#define WITH_SOCKS5 1\n" ++
+    "#define WITH_PROXY 1\n" ++
+    "#define WITH_GENERICSOCKET 1\n" ++
     "#define WITH_SOCKETPAIR 1\n" ++
     "#define WITH_LISTEN 1\n" ++
-    "#define WITH_VSOCK 0\n" ++
-    "#define WITH_PTY 0\n" ++
+    "#define WITH_VSOCK 1\n" ++
+    "#define WITH_PTY 1\n" ++
     "#define WITH_READLINE 0\n" ++
     "#define WITH_OPENSSL 0\n" ++
     "#define WITH_TCPWRAP 0\n" ++
-    "#define WITH_POSIXMQ 0\n" ++
-    "#define WITH_NAMESPACES 0\n" ++
+    "#define WITH_POSIXMQ 1\n" ++
+    "#define WITH_NAMESPACES 1\n" ++
     "#define WITH_FS 0\n" ++
-    "#define WITH_TUN 0\n" ++
+    "#define WITH_TUN 1\n" ++
     "#define WITH_STALL 1\n" ++
     "#define WITH_TEXT 1\n" ++
-    "#define WITH_STREAMS 1\n\n" ++
-    "#define WITH_DEFAULT_IPV 4\n" ++
+    "#define WITH_STREAMS 1\n" ++
+    "#define WITH_EXEC 1\n" ++
+    "#define WITH_SYSTEM 1\n" ++
+    "#define WITH_SHELL 1\n" ++
+    "#define WITH_SYCLS 1\n" ++
+    "#define WITH_FILAN 1\n" ++
+    "#define WITH_RETRY 1\n\n" ++
+    "#define WITH_MSGLEVEL 0 /*debug*/\n" ++
+    "#define WITH_MSGLEVEL 0 /*debug*/\n" ++
+    "#define WITH_DEFAULT_IPV '4'\n" ++
     "#define BUILD_DATE \"custom\"\n\n" ++
     "#define HAVE_STRUCT_TIMESPEC 1\n" ++
     "#define HAVE_STRUCT_LINGER 1\n" ++
@@ -134,7 +165,9 @@ const config_linux_glibc =
     "#define HAVE_TYPE_UINT8 1\n" ++
     "#define HAVE_TYPE_UINT16 1\n" ++
     "#define HAVE_TYPE_UINT32 1\n" ++
-    "#define HAVE_TYPE_SA_FAMILY_T 1\n\n" ++
+    "#define HAVE_TYPE_SA_FAMILY_T 1\n" ++
+    "#define HAVE_TYPEOF_ST_NLINK 6\n" ++
+    "#define HAVE_TYPE_BOOL 1\n\n" ++
     "#ifndef _GNU_SOURCE\n" ++
     "#define _GNU_SOURCE 1\n" ++
     "#endif\n\n" ++
@@ -144,11 +177,12 @@ const config_linux_musl =
     "/* Minimal handcrafted config for cross-building socat with zig (musl). */\n" ++
     "#ifndef __config_h_included\n" ++
     "#define __config_h_included 1\n\n" ++
+    "#define RETSIGTYPE void\n" ++
     "#define STDC_HEADERS 1\n" ++
     "#define TIME_WITH_SYS_TIME 1\n" ++
     "#define HAVE_SYS_WAIT_H 1\n" ++
     "#define HAVE_SYS_TYPES_H 1\n" ++
-    "#define HAVE_SYS_SOCKET_H 0\n" ++
+    "#define HAVE_SYS_SOCKET_H 1\n" ++
     "#define HAVE_SYS_UIO_H 1\n" ++
     "#define HAVE_SYS_STAT_H 1\n" ++
     "#define HAVE_SYS_UN_H 1\n" ++
@@ -170,7 +204,10 @@ const config_linux_musl =
     "#define HAVE_UNISTD_H 1\n" ++
     "#define HAVE_POLL_H 1\n" ++
     "#define HAVE_SYS_POLL_H 1\n" ++
-    "#define HAVE_STDBOOL_H 0\n" ++
+    "#define HAVE_STDBOOL_H 1\n" ++
+    "#define CRDLY_SHIFT 8\n" ++
+    "#define TABDLY_SHIFT 11\n" ++
+    "#define CSIZE_SHIFT 4\n" ++
     "#define HAVE_INTTYPES_H 1\n" ++
     "#define HAVE_STDINT_H 1\n" ++
     "#define HAVE_REGEX_H 1\n" ++
@@ -178,9 +215,15 @@ const config_linux_musl =
     "#define HAVE_RESOLV_H 1\n" ++
     "#define HAVE_NET_IF_H 1\n" ++
     "#define HAVE_LINUX_IF_PACKET_H 1\n" ++
+    "#define HAVE_LINUX_IF_TUN_H 1\n" ++
+    "#define HAVE_LINUX_VM_SOCKETS_H 1\n" ++
+    "#define HAVE_LINUX_DCCP_H 1\n" ++
     "#define HAVE_NETINET_IF_ETHER_H 1\n" ++
     "#define HAVE_PWD_H 1\n" ++
-    "#define HAVE_GRP_H 1\n\n" ++
+    "#define HAVE_GRP_H 1\n" ++
+    "#define HAVE_PTY_H 1\n" ++
+    "#define HAVE_MQUEUE_H 1\n" ++
+    "#define HAVE_SCHED_H 1\n\n" ++
     "#define HAVE_STRFTIME 1\n" ++
     "#define HAVE_SELECT 1\n" ++
     "#define HAVE_PSELECT 1\n" ++
@@ -214,7 +257,8 @@ const config_linux_musl =
     "#define HAVE_GETPWUID 1\n" ++
     "#define HAVE_GETGRNAM 1\n" ++
     "#define HAVE_INITGROUPS 1\n" ++
-    "#define HAVE_SIGACTION 1\n\n" ++
+    "#define HAVE_SIGACTION 1\n" ++
+    "#define HAVE_FDS_BITS 1\n\n" ++
     "#define HAVE_PROTOTYPE_LIB_posix_memalign 1\n" ++
     "#define HAVE_PROTOTYPE_LIB_strdup 1\n" ++
     "#define HAVE_PROTOTYPE_LIB_strerror 1\n" ++
@@ -232,37 +276,46 @@ const config_linux_musl =
     "#define WITH_FILE 1\n" ++
     "#define WITH_GOPEN 1\n" ++
     "#define WITH_CREAT 1\n" ++
+    // "#define WITH_TERMIOS 1\n" ++
     "#define WITH_PIPE 1\n" ++
     "#define WITH_UNIX 1\n" ++
+    "#define WITH_ABSTRACT_UNIXSOCKET 1\n" ++
     "#define WITH_INTERFACE 1\n" ++
     "#define WITH_IP4 1\n" ++
     "#define WITH_IP6 1\n" ++
     "#define WITH_TCP 1\n" ++
     "#define WITH_UDP 1\n" ++
-    "#define WITH_RAWIP 0\n" ++
-    "#define WITH_SCTP 0\n" ++
-    "#define WITH_DCCP 0\n" ++
-    "#define WITH_UDPLITE 0\n" ++
-    "#define WITH_SOCKS4 0\n" ++
-    "#define WITH_SOCKS4A 0\n" ++
-    "#define WITH_SOCKS5 0\n" ++
-    "#define WITH_PROXY 0\n" ++
-    "#define WITH_GENERICSOCKET 0\n" ++
+    "#define WITH_RAWIP 1\n" ++
+    "#define WITH_SCTP 1\n" ++
+    "#define WITH_DCCP 1\n" ++
+    "#define WITH_UDPLITE 1\n" ++
+    "#define WITH_SOCKS4 1\n" ++
+    "#define WITH_SOCKS4A 1\n" ++
+    "#define WITH_SOCKS5 1\n" ++
+    "#define WITH_PROXY 1\n" ++
+    "#define WITH_GENERICSOCKET 1\n" ++
     "#define WITH_SOCKETPAIR 1\n" ++
     "#define WITH_LISTEN 1\n" ++
-    "#define WITH_VSOCK 0\n" ++
-    "#define WITH_PTY 0\n" ++
+    "#define WITH_VSOCK 1\n" ++
+    "#define WITH_PTY 1\n" ++
     "#define WITH_READLINE 0\n" ++
     "#define WITH_OPENSSL 0\n" ++
     "#define WITH_TCPWRAP 0\n" ++
-    "#define WITH_POSIXMQ 0\n" ++
-    "#define WITH_NAMESPACES 0\n" ++
+    "#define WITH_POSIXMQ 1\n" ++
+    "#define WITH_NAMESPACES 1\n" ++
     "#define WITH_FS 0\n" ++
-    "#define WITH_TUN 0\n" ++
+    "#define WITH_TUN 1\n" ++
     "#define WITH_STALL 1\n" ++
     "#define WITH_TEXT 1\n" ++
-    "#define WITH_STREAMS 1\n\n" ++
-    "#define WITH_DEFAULT_IPV 4\n" ++
+    "#define WITH_STREAMS 1\n" ++
+    "#define WITH_EXEC 1\n" ++
+    "#define WITH_SYSTEM 1\n" ++
+    "#define WITH_SHELL 1\n" ++
+    "#define WITH_SYCLS 1\n" ++
+    "#define WITH_FILAN 1\n" ++
+    "#define WITH_RETRY 1\n\n" ++
+    "#define WITH_MSGLEVEL 0 /*debug*/\n" ++
+    "#define WITH_DEFAULT_IPV '4'\n" ++
     "#define BUILD_DATE \"custom\"\n\n" ++
     "#define HAVE_STRUCT_TIMESPEC 1\n" ++
     "#define HAVE_STRUCT_LINGER 1\n" ++
@@ -274,7 +327,9 @@ const config_linux_musl =
     "#define HAVE_TYPE_UINT8 1\n" ++
     "#define HAVE_TYPE_UINT16 1\n" ++
     "#define HAVE_TYPE_UINT32 1\n" ++
-    "#define HAVE_TYPE_SA_FAMILY_T 1\n\n" ++
+    "#define HAVE_TYPE_SA_FAMILY_T 1\n" ++
+    "#define HAVE_TYPEOF_ST_NLINK 6\n" ++
+    "#define HAVE_TYPE_BOOL 1\n\n" ++
     "#ifndef _GNU_SOURCE\n" ++
     "#define _GNU_SOURCE 1\n" ++
     "#endif\n\n" ++
@@ -403,7 +458,7 @@ const config_windows =
     "#define WITH_STALL 1\n" ++
     "#define WITH_TEXT 1\n" ++
     "#define WITH_STREAMS 1\n\n" ++
-    "#define WITH_DEFAULT_IPV 4\n" ++
+    "#define WITH_DEFAULT_IPV '4'\n" ++
     "#define BUILD_DATE \"custom\"\n\n" ++
     "#define HAVE_STRUCT_TIMESPEC 1\n" ++
     "#define HAVE_STRUCT_LINGER 1\n" ++
@@ -414,6 +469,7 @@ const config_windows =
     "#define HAVE_TYPE_UINT16 1\n" ++
     "#define HAVE_TYPE_UINT32 1\n" ++
     "#define HAVE_TYPE_SA_FAMILY_T 1\n" ++
+    "#define HAVE_TYPEOF_ST_NLINK 6\n" ++
     "#define HAVE_TYPE_BOOL 1\n" ++
     "#define HAVE_BASIC_UID_T 3\n" ++
     "#define HAVE_BASIC_GID_T 3\n" ++
@@ -866,6 +922,7 @@ pub fn build(b: *std.Build) void {
                 exe.linkSystemLibrary("rt");
             }
             exe.linkSystemLibrary("m");
+            exe.linkSystemLibrary("util");
         },
         .windows => {
             // Windows builds are experimental; keep flags minimal.
@@ -919,12 +976,26 @@ pub fn build(b: *std.Build) void {
         "socat/xio-ipapp.c",
         "socat/xio-tcp.c",
         "socat/xio-udp.c",
+        "socat/xio-udplite.c",
+        "socat/xio-dccp.c",
+        "socat/xio-sctp.c",
+        "socat/xio-rawip.c",
         "socat/xio-progcall.c",
         "socat/xio-exec.c",
         "socat/xio-system.c",
         "socat/xio-shell.c",
+        "socat/xio-proxy.c",
+        "socat/xio-socks.c",
+        "socat/xio-socks5.c",
         "socat/xio-termios.c",
+        "socat/xio-pty.c",
+        "socat/xio-tun.c",
         "socat/xio-streams.c",
+        "socat/xio-posixmq.c",
+        "socat/xio-namespaces.c",
+        "socat/xio-netlink.c",
+        "socat/xio-vsock.c",
+        "socat/xio-fs.c",
         "socat/xio-ascii.c",
         "socat/xiolockfile.c",
         "socat/xio-stall.c",
@@ -933,6 +1004,7 @@ pub fn build(b: *std.Build) void {
         "socat/error.c",
         "socat/dalan.c",
         "socat/hostan.c",
+        "socat/filan.c",
         "socat/fdname.c",
         "socat/sysutils.c",
         "socat/utils.c",
