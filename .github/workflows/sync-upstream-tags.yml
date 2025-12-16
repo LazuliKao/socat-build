@@ -1,0 +1,86 @@
+name: Sync Upstream Tags
+
+on:
+  # 每周一凌晨1点运行
+  schedule:
+    - cron: '0 1 * * 1'
+  # 也可以手动触发
+  workflow_dispatch:
+
+jobs:
+  sync-tags:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Fetch upstream tags for socat submodule
+        run: |
+          cd socat
+          git fetch --tags origin
+          # 获取最新的tag（按创建时间排序）
+          LATEST_TAG=$(git tag -l --sort=-creatordate | grep -E '^tag-' | head -n 1)
+          echo "Latest upstream tag: $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          
+          # 为本仓库的tag添加v前缀，去掉tag-前缀
+          LOCAL_TAG="v${LATEST_TAG#tag-}"
+          echo "Local tag will be: $LOCAL_TAG"
+          echo "LOCAL_TAG=$LOCAL_TAG" >> $GITHUB_ENV
+          
+          # 检查本仓库是否已经有这个tag
+          cd ..
+          if git rev-parse "$LOCAL_TAG" >/dev/null 2>&1; then
+            echo "Tag $LOCAL_TAG already exists in main repository"
+            echo "TAG_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "Tag $LOCAL_TAG does not exist, will create it"
+            echo "TAG_EXISTS=false" >> $GITHUB_ENV
+          fi
+      
+      - name: Update submodule to latest tag
+        if: env.TAG_EXISTS == 'false'
+        run: |
+          cd socat
+          git checkout ${{ env.LATEST_TAG }}
+          cd ..
+          git add socat
+          
+          # 检查是否有变化
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            echo "NO_CHANGES=true" >> $GITHUB_ENV
+          else
+            git commit -m "Update socat submodule to ${{ env.LATEST_TAG }} (local tag: ${{ env.LOCAL_TAG }})"
+            echo "NO_CHANGES=false" >> $GITHUB_ENV
+          fi
+      
+      - name: Create and push tag
+        if: env.TAG_EXISTS == 'false' && env.NO_CHANGES == 'false'
+        run: |
+          # 创建带v前缀的tag
+          git tag -a ${{ env.LOCAL_TAG }} -m "Sync with socat upstream tag ${{ env.LATEST_TAG }}"
+          
+          # 推送提交和tag
+          git push origin main
+          git push origin ${{ env.LOCAL_TAG }}
+      
+      - name: Summary
+        run: |
+          if [ "${{ env.TAG_EXISTS }}" = "true" ]; then
+            echo "✅ Tag ${{ env.LOCAL_TAG }} already exists, nothing to do"
+          elif [ "${{ env.NO_CHANGES }}" = "true" ]; then
+            echo "✅ Already at latest tag ${{ env.LATEST_TAG }} (local: ${{ env.LOCAL_TAG }}), nothing to do"
+          else
+            echo "✅ Successfully synced upstream tag ${{ env.LATEST_TAG }} to local tag ${{ env.LOCAL_TAG }}"
+          fi
