@@ -72,7 +72,7 @@ jobs:
           git tag -a ${{ env.LOCAL_TAG }} -m "Sync with socat upstream tag ${{ env.LATEST_TAG }}"
           
           # 推送提交和tag
-          git push origin main
+          git push origin master
           git push origin ${{ env.LOCAL_TAG }}
       
       - name: Summary
@@ -84,3 +84,4 @@ jobs:
           else
             echo "✅ Successfully synced upstream tag ${{ env.LATEST_TAG }} to local tag ${{ env.LOCAL_TAG }}"
           fi
+
